@@ -48,9 +48,11 @@ jobs:
       - name: Dependencies
         run: |
           apt-get update
-          apt-get install -y --no-install-recommends clang-tidy \
-            ros-jazzy-generate-parameter-library ros-jazzy-launch-testing-ros \
-            ros-jazzy-rclcpp-components ros-jazzy-std-srvs
+          apt-get install -y --no-install-recommends clang-tidy rsync
+          rosdep update
+          # rosdep, not a hand-picked apt list: scaffolding only renames a template's
+          # package.xml, so its declared deps are exactly what a scaffolded package needs.
+          rosdep install --from-paths templates --ignore-src -y --rosdistro jazzy
       - name: Verify golden templates
         shell: bash
         run: tools/verify_templates.sh --strict
