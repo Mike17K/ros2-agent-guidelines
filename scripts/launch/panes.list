@@ -1,0 +1,9 @@
+# Pane plan for scripts/launch/panes.sh (project-owned).
+# <column>|<title>|<command>   column: L or R. Empty command = a prepared shell.
+# Number the titles in start order; the command is pre-filled, Enter runs it.
+L|1 System bringup|ros2 launch <system>_bringup system.launch.py sim_gazebo:=true
+L|3 RViz|ros2 launch <system>_bringup rviz.launch.py
+L|Scratch|
+R|2 Capabilities|ros2 launch <capability>_bringup <capability>.launch.py
+R|4 Orchestrator|ros2 launch <system>_orchestrator orchestrator.launch.py
+R|Monitor|ros2 topic list

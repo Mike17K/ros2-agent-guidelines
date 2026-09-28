@@ -1,0 +1,5 @@
+# rcfile for interactive shells opened by scripts/container.sh: user bashrc, then
+# the workspace environment (scripts/env.sh). Nothing is appended to ~/.bashrc.
+[ -f ~/.bashrc ] && source ~/.bashrc
+source "$(dirname "${BASH_SOURCE[0]}")/env.sh"
+cd "$WS_ROOT" 2>/dev/null || true

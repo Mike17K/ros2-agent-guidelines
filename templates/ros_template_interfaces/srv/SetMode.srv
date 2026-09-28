@@ -1,0 +1,10 @@
+# Request a mode change. Fast (< 100 ms); anything slower must be an action [IF-004].
+uint8 MODE_IDLE=0
+uint8 MODE_MANUAL=1
+uint8 MODE_AUTONOMOUS=2
+
+uint8 mode                 # one of MODE_*
+---
+bool success
+string message             # reason when success == false
+uint8 active_mode          # mode in effect after the call

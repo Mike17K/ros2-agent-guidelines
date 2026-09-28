@@ -1,0 +1,6 @@
+# Runtime parameters for filter_node. Schema, bounds and descriptions live in
+# src/filter_node_parameters.yaml; this file only sets deployment values.
+/**/filter_node:
+  ros__parameters:
+    cutoff_frequency_hz: 10.0
+    max_sample_gap_s: 0.5

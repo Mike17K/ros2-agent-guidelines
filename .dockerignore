@@ -1,0 +1,8 @@
+# Build context for dev images: only what dependency installation needs.
+# Sources are bind-mounted at runtime, never baked into the dev image.
+*
+!src/.gitkeep
+!src/**/package.xml
+!project.env
+!scripts/
+!docker/

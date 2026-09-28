@@ -1,0 +1,18 @@
+# Node contract (CONTRACT-001, docs/agent/contracts.md). Change this first, then
+# the tests, then the code. Verified by tools/contracts.py and the launch test.
+node: filter_node
+package: ros_template_cpp
+executable: filter_node
+plugin: ros_template_cpp::FilterNode
+lifecycle: true
+parameters_schema: src/filter_node_parameters.yaml
+subscribes:
+  - topic: imu/data_raw
+    type: sensor_msgs/msg/Imu
+    qos: sensor_subscription
+publishes:
+  - topic: imu/data
+    type: sensor_msgs/msg/Imu
+    qos: sensor_publisher
+    when: active
+    max_latency_ms: 5

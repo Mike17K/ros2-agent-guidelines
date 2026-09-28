@@ -1,0 +1,18 @@
+# Long-running, cancellable, with feedback [IF-004].
+# Goal
+geometry_msgs/PoseStamped target        # [m, rad] in target.header.frame_id
+float64 max_linear_velocity_mps         # [m/s] > 0
+float64 position_tolerance_m            # [m] > 0
+---
+# Result
+uint8 ERROR_NONE=0
+uint8 ERROR_UNREACHABLE=1
+uint8 ERROR_TIMEOUT=2
+uint8 ERROR_CANCELED=3
+uint8 error_code                        # one of ERROR_*
+string message
+geometry_msgs/PoseStamped final_pose
+---
+# Feedback
+float64 distance_remaining_m            # [m]
+builtin_interfaces/Duration estimated_time_remaining

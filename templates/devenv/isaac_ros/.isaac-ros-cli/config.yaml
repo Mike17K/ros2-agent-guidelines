@@ -1,0 +1,7 @@
+# Isaac ROS CLI workspace config (project-owned after `scripts/container.sh init isaac_ros`).
+# Each key layers Dockerfile.<key> (found at the workspace root) on the Isaac ROS base image.
+# Keep ISAAC_ROS_IMAGE_KEY in project.env equal to the key below.
+docker:
+  image:
+    additional_image_keys:
+      - ws

@@ -1,0 +1,79 @@
+# CI runs the same gate agents run locally [TOOL-001].
+name: ci
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 2 * * *'
+
+jobs:
+  check:
+    if: github.event_name != 'schedule'
+    runs-on: ubuntu-24.04
+    container: ros:jazzy-ros-base
+    steps:
+      - uses: actions/checkout@v4
+      - name: System tools
+        run: |
+          apt-get update
+          apt-get install -y --no-install-recommends clang-tidy python3-pip rsync
+      - name: Dependencies (rosdep)
+        run: |
+          rosdep update
+          rosdep install --from-paths src --ignore-src -y --rosdistro jazzy
+      - name: Guideline rule self-test
+        run: python3 tools/lint_rules.py --self-test
+      - name: Definition of Done
+        shell: bash
+        run: tools/check.sh --strict
+      - name: ASan + UBSan
+        shell: bash
+        run: tools/check.sh --sanitize asan
+      - name: Upload logs
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: colcon-logs
+          path: |
+            log*/
+            build*/*/test_results/
+
+  templates:
+    # Only meaningful in the upstream guidelines repo; skipped when templates are unchanged.
+    runs-on: ubuntu-24.04
+    container: ros:jazzy-ros-base
+    steps:
+      - uses: actions/checkout@v4
+      - name: Dependencies
+        run: |
+          apt-get update
+          apt-get install -y --no-install-recommends clang-tidy \
+            ros-jazzy-generate-parameter-library ros-jazzy-launch-testing-ros \
+            ros-jazzy-rclcpp-components ros-jazzy-std-srvs
+      - name: Verify golden templates
+        shell: bash
+        run: tools/verify_templates.sh --strict
+
+  nightly:
+    # L4 replay + L5 scenario tests, TSan and coverage (docs/agent/testing.md).
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-24.04
+    container: ros:jazzy-ros-base
+    steps:
+      - uses: actions/checkout@v4
+      - name: Dependencies
+        run: |
+          apt-get update
+          apt-get install -y --no-install-recommends clang-tidy lcov python3-pytest-cov
+          rosdep update
+          rosdep install --from-paths src --ignore-src -y --rosdistro jazzy
+      - name: Nightly levels (L0-L5)
+        shell: bash
+        run: tools/check.sh --strict --nightly
+      - name: ThreadSanitizer
+        shell: bash
+        run: tools/check.sh --sanitize tsan
+      - name: Coverage
+        shell: bash
+        run: tools/check.sh --coverage

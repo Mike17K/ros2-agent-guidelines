@@ -1,0 +1,17 @@
+# Parameter schema for FilterNode [CPP-010].
+# generate_parameter_library turns this into a typed, validated C++ struct.
+# Every parameter has a description, units in its name, and validation.
+ros_template_cpp:
+  cutoff_frequency_hz:
+    type: double
+    default_value: 10.0
+    description: "Low-pass -3 dB cutoff frequency applied to angular velocity and linear acceleration."
+    validation:
+      bounds<>: [0.01, 1000.0]
+  max_sample_gap_s:
+    type: double
+    default_value: 0.5
+    read_only: true
+    description: "Gaps between consecutive message stamps larger than this reset the filter."
+    validation:
+      gt<>: [0.0]

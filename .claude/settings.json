@@ -1,0 +1,48 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "permissions": {
+    "allow": [
+      "Bash(tools/check.sh:*)",
+      "Bash(./tools/check.sh:*)",
+      "Bash(tools/new_package.py:*)",
+      "Bash(./tools/new_package.py:*)",
+      "Bash(tools/lint_rules.py:*)",
+      "Bash(python3 tools/lint_rules.py:*)",
+      "Bash(tools/verify_templates.sh:*)",
+      "Bash(colcon build:*)",
+      "Bash(colcon test:*)",
+      "Bash(colcon test-result:*)",
+      "Bash(colcon list:*)",
+      "Bash(colcon graph:*)",
+      "Bash(ros2 pkg:*)",
+      "Bash(ros2 interface:*)",
+      "Bash(ros2 node list:*)",
+      "Bash(ros2 topic list:*)",
+      "Bash(ros2 topic info:*)",
+      "Bash(ros2 param list:*)",
+      "Bash(ros2 param describe:*)",
+      "Bash(ros2 doctor:*)",
+      "Bash(ament_uncrustify:*)",
+      "Bash(ament_flake8:*)",
+      "Bash(ament_cpplint:*)",
+      "Bash(ament_pep257:*)",
+      "Bash(ament_copyright:*)",
+      "Bash(ament_xmllint:*)",
+      "Bash(rosdep check:*)"
+    ]
+  },
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"$CLAUDE_PROJECT_DIR\"/tools/hooks/post_edit.sh",
+            "timeout": 60
+          }
+        ]
+      }
+    ]
+  }
+}

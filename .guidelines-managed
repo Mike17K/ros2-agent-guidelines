@@ -1,0 +1,27 @@
+# Paths owned by the upstream guidelines repo. tools/sync_guidelines.sh
+# overwrites these in a workspace. Everything else is project-owned, notably:
+# PROJECT.md, project.env, src/, docs/plans/, docs/decisions/, docs/agent/local/,
+# tools/local/, scripts/launch/panes.list, external/external.list, Makefile.local,
+# docker/, Dockerfile.*, .isaac-ros-cli/, config/.
+AGENTS.md
+CLAUDE.md
+Makefile
+.dockerignore
+.guidelines-version
+.guidelines-managed
+.clang-tidy
+.pre-commit-config.yaml
+.claude/settings.json
+.claude/skills
+.claude/agents
+.github/workflows/ci.yml
+docs/agent
+templates
+tools
+scripts/env.sh
+scripts/container.sh
+scripts/container_bashrc
+scripts/setup_host.sh
+scripts/setup_external.sh
+scripts/launch/panes.sh
+scripts/launch/pane.sh

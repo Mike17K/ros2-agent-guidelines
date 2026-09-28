@@ -1,0 +1,6 @@
+# Non-ROS dependencies (ARCH-015). Project-owned. Run scripts/setup_external.sh.
+# submodule <path> <git url> <pinned tag or commit>
+# file      <path> <url>            (lands in external/<path>; keep large files under weights/)
+#
+# submodule MobileSAM https://github.com/ChaoningZhang/MobileSAM.git <commit>
+# file      weights/mobile_sam.pt https://github.com/ChaoningZhang/MobileSAM/raw/master/weights/mobile_sam.pt

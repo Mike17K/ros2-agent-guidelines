@@ -1,0 +1,22 @@
+# Node contract (CONTRACT-001, docs/agent/contracts.md). Change this first, then
+# the tests, then the code. Verified by tools/contracts.py and the launch test.
+node: rate_monitor
+package: ros_template_py
+executable: rate_monitor
+lifecycle: false
+parameters:
+  - {name: expected_rate_hz, type: double, range: [0.1, 10000.0]}
+  - {name: min_rate_ratio, type: double, range: [0.0, 1.0]}
+  - {name: window_s, type: double, range: [0.05, 60.0], read_only: true}
+  - {name: publish_period_s, type: double, range: [0.01, 10.0], read_only: true}
+subscribes:
+  - topic: input
+    type: sensor_msgs/msg/Imu
+    qos: sensor_subscription
+publishes:
+  - topic: ~/healthy
+    type: std_msgs/msg/Bool
+    qos: state
+    when: always
+services:
+  - {name: ~/reset, type: std_srvs/srv/Trigger}

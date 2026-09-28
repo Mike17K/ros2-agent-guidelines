@@ -1,0 +1,51 @@
+# clang-tidy config [TOOL-002]. Run by tools/check.sh when clang-tidy is installed.
+# Disabled on purpose: bugprone-reserved-identifier (ROS 2 cpplint mandates
+# PKG__FILE_HPP_ include guards, which contain '__').
+# Style/formatting is owned by ament_uncrustify + cpplint; this file is about bugs,
+# performance and modern C++ only, so it does not fight the ROS 2 style.
+Checks: >
+  -*,
+  bugprone-*,
+  -bugprone-easily-swappable-parameters,
+  -bugprone-exception-escape,
+  -bugprone-reserved-identifier,
+  cert-err34-c,
+  cert-err58-cpp,
+  concurrency-*,
+  cppcoreguidelines-init-variables,
+  cppcoreguidelines-no-malloc,
+  cppcoreguidelines-owning-memory,
+  cppcoreguidelines-prefer-member-initializer,
+  cppcoreguidelines-pro-type-member-init,
+  cppcoreguidelines-slicing,
+  cppcoreguidelines-virtual-class-destructor,
+  misc-const-correctness,
+  misc-definitions-in-headers,
+  misc-misplaced-const,
+  misc-redundant-expression,
+  misc-unused-parameters,
+  misc-unused-using-decls,
+  modernize-make-shared,
+  modernize-make-unique,
+  modernize-use-nullptr,
+  modernize-use-override,
+  modernize-use-emplace,
+  modernize-loop-convert,
+  modernize-use-equals-default,
+  modernize-use-equals-delete,
+  performance-*,
+  readability-container-size-empty,
+  readability-delete-null-pointer,
+  readability-implicit-bool-conversion,
+  readability-make-member-function-const,
+  readability-redundant-smartptr-get,
+  readability-static-accessed-through-instance
+WarningsAsErrors: 'bugprone-*,concurrency-*,performance-*,cppcoreguidelines-owning-memory,cppcoreguidelines-no-malloc,modernize-use-override'
+HeaderFilterRegex: '.*/src/.*/include/.*'
+CheckOptions:
+  - key: misc-const-correctness.AnalyzeValues
+    value: false
+  - key: readability-implicit-bool-conversion.AllowPointerConditions
+    value: true
+  - key: performance-unnecessary-value-param.AllowedTypes
+    value: 'SharedPtr;ConstSharedPtr;shared_ptr'

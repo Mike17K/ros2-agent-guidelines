@@ -1,0 +1,35 @@
+# pip install pre-commit && pre-commit install
+# Fast checks on staged files. The full gate is tools/check.sh (and CI).
+repos:
+  - repo: local
+    hooks:
+      - id: guideline-rules
+        name: guideline rules (tools/lint_rules.py)
+        entry: python3 tools/lint_rules.py
+        language: system
+        files: ^src/.*\.(cpp|hpp|h|py|txt|cmake|xml|yaml)$
+      - id: ament-uncrustify
+        name: ament_uncrustify
+        entry: bash -c 'source /opt/ros/${ROS_DISTRO:-jazzy}/setup.bash && ament_uncrustify "$@"' --
+        language: system
+        files: ^src/.*\.(cpp|hpp|h)$
+      - id: ament-flake8
+        name: ament_flake8
+        entry: bash -c 'source /opt/ros/${ROS_DISTRO:-jazzy}/setup.bash && ament_flake8 "$@"' --
+        language: system
+        files: ^src/.*\.py$
+      - id: ament-xmllint
+        name: ament_xmllint
+        entry: bash -c 'source /opt/ros/${ROS_DISTRO:-jazzy}/setup.bash && ament_xmllint "$@"' --
+        language: system
+        files: ^src/.*package\.xml$
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: check-yaml
+        args: [--allow-multiple-documents]
+      - id: check-added-large-files
+        args: [--maxkb=2048]
+      - id: end-of-file-fixer
+      - id: trailing-whitespace
+      - id: check-merge-conflict

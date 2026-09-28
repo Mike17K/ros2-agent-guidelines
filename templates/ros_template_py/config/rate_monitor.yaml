@@ -1,0 +1,7 @@
+# Deployment values; descriptions and ranges live in the node's descriptors.
+/**/rate_monitor:
+  ros__parameters:
+    expected_rate_hz: 100.0
+    min_rate_ratio: 0.8
+    window_s: 1.0
+    publish_period_s: 0.5
