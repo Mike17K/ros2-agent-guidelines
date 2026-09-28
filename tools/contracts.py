@@ -453,13 +453,23 @@ def check_live(contract_path, node_fqn: str, node=None, timeout_s: float = 15.0,
                 return [f'{node_fqn}: node not found within {timeout_s:.0f} s']
             rclpy.spin_once(node, timeout_sec=0.1)
         if c.data.get('lifecycle'):
-            res = _call(node, GetState, f'{node_fqn}/get_state', GetState.Request(),
-                        max(1.0, deadline - time.monotonic()))
-            if res is None:
-                return [f'{node_fqn}: lifecycle node but {node_fqn}/get_state did not answer']
-            if res.current_state.label != 'active':
-                return [f'{node_fqn}: lifecycle state is "{res.current_state.label}", '
-                        'expected "active"']
+            # autostart transitions asynchronously after the node becomes discoverable
+            # (unconfigured -> inactive -> active), so retry against the same deadline
+            # instead of failing on the first snapshot [avoids a launch-test race].
+            label = None
+            while time.monotonic() < deadline:
+                res = _call(node, GetState, f'{node_fqn}/get_state', GetState.Request(),
+                            max(0.5, min(2.0, deadline - time.monotonic())))
+                label = res.current_state.label if res is not None else label
+                if label == 'active':
+                    break
+                rclpy.spin_once(node, timeout_sec=0.1)
+            if label is None:
+                return [f'{node_fqn}: lifecycle node but {node_fqn}/get_state did not answer '
+                        f'within {timeout_s:.0f} s']
+            if label != 'active':
+                return [f'{node_fqn}: lifecycle state is "{label}", expected "active" '
+                        f'(timed out after {timeout_s:.0f} s)']
         # Endpoints appear asynchronously: retry until they match or time runs out.
         fails = _live_once(c, node, ns, name, remap)
         while fails and time.monotonic() < deadline:

@@ -50,9 +50,15 @@ jobs:
           apt-get update
           apt-get install -y --no-install-recommends clang-tidy rsync
           rosdep update
-          # rosdep, not a hand-picked apt list: scaffolding only renames a template's
-          # package.xml, so its declared deps are exactly what a scaffolded package needs.
-          rosdep install --from-paths templates --ignore-src -y --rosdistro jazzy
+          # Resolve rosdep keys by hand (grep, not `--from-paths templates`): that whole
+          # directory has a COLCON_IGNORE marker so colcon skips building it in place, and
+          # catkin_pkg's package discovery (which rosdep uses too) respects the same
+          # ignore-marker convention, so `--from-paths` silently finds zero packages there.
+          # The raw templates' MAINTAINER_EMAIL placeholder would also fail catkin_pkg's
+          # package.xml validation before tools/new_package.py fills it in.
+          keys=$(grep -rhoP '(?<=depend>)[^<]+' templates/*/package.xml | sort -u)
+          pkgs=$(rosdep resolve $keys --rosdistro jazzy 2>/dev/null | grep -v '^#')
+          apt-get install -y --no-install-recommends $pkgs
       - name: Verify golden templates
         shell: bash
         run: tools/verify_templates.sh --strict
