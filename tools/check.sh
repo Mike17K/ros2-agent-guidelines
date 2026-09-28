@@ -49,9 +49,20 @@ while [[ $# -gt 0 ]]; do
 done
 
 # --- Environment ---------------------------------------------------------------
-if [[ -z "${ROS_DISTRO:-}" ]]; then
+# Source setup.bash whenever it exists, regardless of whether $ROS_DISTRO already
+# looks set: some base images (e.g. ros:jazzy-ros-base) bake ROS_DISTRO into the
+# image as a plain Docker ENV, present even when setup.bash was never sourced (e.g.
+# under GitHub Actions' container jobs, which docker-exec into the image with its
+# entrypoint overridden, so /ros_entrypoint.sh never runs). Gating on -z "$ROS_DISTRO"
+# would skip sourcing there and leave CMAKE_PREFIX_PATH unset. Sourcing is idempotent.
+DISTRO="${CHECK_ROS_DISTRO:-${ROS_DISTRO:-jazzy}}"
+if [[ -f "/opt/ros/$DISTRO/setup.bash" ]]; then
   # shellcheck disable=SC1090
-  source "/opt/ros/${CHECK_ROS_DISTRO:-jazzy}/setup.bash" || { echo "ROS not found" >&2; exit 2; }
+  source "/opt/ros/$DISTRO/setup.bash"
+fi
+if [[ -z "${AMENT_PREFIX_PATH:-}" ]]; then
+  echo "ROS not found: no /opt/ros/$DISTRO/setup.bash and no ROS environment already sourced" >&2
+  exit 2
 fi
 cd "$WS" || exit 2
 [[ -d src ]] || { echo "no src/ in $WS" >&2; exit 2; }
