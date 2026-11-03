@@ -4,14 +4,17 @@
 # this repo's. Equivalent to the README's "Start a new project" cp -r, but for
 # a different machine/repo that doesn't have a local checkout of this one.
 #
-# Run via curl:
+# Run via curl (public repos only -- raw.githubusercontent.com 404s on a
+# private one; clone it yourself and run this script locally instead):
 #   curl -fsSL https://raw.githubusercontent.com/Mike17K/ros2-agent-guidelines/main/tools/bootstrap.sh \
 #     | bash -s -- my_new_robot_ws
 #
 # Or locally: tools/bootstrap.sh <project-name> [parent-dir]
 #
 # GUIDELINES_REPO_URL / GUIDELINES_REF override the source repo/branch (e.g. to
-# bootstrap from a fork, or from a local checkout for testing).
+# bootstrap from a fork, or from a local checkout for testing). git itself
+# handles a private REPO_URL via your normal git credentials (gh credential
+# helper or SSH key) -- no extra auth plumbing needed here.
 set -euo pipefail
 
 NAME="${1:?usage: bootstrap.sh <project-name> [parent-dir]}"
@@ -29,21 +32,15 @@ PARENT="$(cd "$PARENT" && pwd)"
 TARGET="$PARENT/$NAME"
 [[ ! -e "$TARGET" ]] || { echo "bootstrap.sh: $TARGET already exists, refusing to overwrite" >&2; exit 1; }
 
-TMP="$(mktemp -d)"
-trap 'rm -rf "$TMP"' EXIT
-
-echo "Fetching guidelines ($REPO_URL@$REF)..."
-git clone --quiet --depth=1 --branch "$REF" "$REPO_URL" "$TMP/upstream"
-[[ -f "$TMP/upstream/.guidelines-managed" ]] || {
+echo "Cloning guidelines ($REPO_URL@$REF) into $TARGET..."
+git clone --quiet --depth=1 --branch "$REF" "$REPO_URL" "$TARGET"
+[[ -f "$TARGET/.guidelines-managed" ]] || {
   echo "bootstrap.sh: $REPO_URL is not a guidelines repo (no .guidelines-managed)" >&2
+  rm -rf "$TARGET"
   exit 2
 }
-VERSION="$(cat "$TMP/upstream/.guidelines-version" 2>/dev/null || echo unknown)"
-rm -rf "$TMP/upstream/.git"
-
-echo "Creating $TARGET..."
-mkdir -p "$TARGET"
-cp -r "$TMP/upstream/." "$TARGET/"
+VERSION="$(cat "$TARGET/.guidelines-version" 2>/dev/null || echo unknown)"
+rm -rf "$TARGET/.git"
 
 # Seed project.env with the new project's name (PROJECT_NAME and CONTAINER_NAME
 # both default to the literal "ros2_project" placeholder).
