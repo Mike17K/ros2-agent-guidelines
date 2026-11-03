@@ -50,4 +50,7 @@ case "$DEVENV" in
   *) echo "unknown DEVENV=$DEVENV"; exit 2 ;;
 esac
 need "tmux (scripts/launch/panes.sh)" "command -v tmux" "sudo apt-get install -y tmux"
+need "auto-source scripts/env.sh in ~/.bashrc (DEVENV-002)" \
+  "grep -qF 'guidelines DEVENV-002' ~/.bashrc 2>/dev/null" \
+  "printf '\n# ROS 2 workspace auto-env (guidelines DEVENV-002)\nif [[ -f \"\$PWD/scripts/env.sh\" ]]; then source \"\$PWD/scripts/env.sh\"; fi\n' >> ~/.bashrc"
 [[ $missing -eq 0 ]] && echo "host ready" || { echo "host NOT ready"; exit 1; }

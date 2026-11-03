@@ -47,6 +47,16 @@ to `~/.bashrc`, and never repeat these values in pane scripts, launch files or
 Dockerfiles. A value that differs per machine goes in `project.env`, or is
 overridden in the environment for one command (`ROS_DOMAIN_ID=7 make build`).
 
+`scripts/setup_host.sh --install` offers one opt-in `~/.bashrc` convenience: a
+conditional hook that sources `scripts/env.sh` whenever a new interactive shell
+starts inside a directory that has one, so switching between workspaces doesn't
+need a manual `source scripts/env.sh` each time. It is not covered by the "never
+append to `~/.bashrc`" rule above, since it carries no project values (no RMW, no
+domain, no distro) — only a generic `if [[ -f "$PWD/scripts/env.sh" ]]; then source
+"$PWD/scripts/env.sh"; fi`, the same line regardless of which workspace it finds.
+It only fires at shell startup for whatever `$PWD` is at that moment, not on every
+`cd`.
+
 **DEVENV-003 — Routine actions are `make` targets.** Use `make build p=pkg`,
 `make check p=pkg`, `make new-cpp n=name d=src/robots/arm`, `make rosdeps` and
 `make panes`. Targets wrap the real tools (`tools/check.sh`, `tools/new_package.py`).

@@ -22,7 +22,7 @@ Makefile             front door: make help
 docs/agent/          topic rules, ladder, contracts, planning, devenv, prompts, benchmarks
 docs/plans/ docs/decisions/   approved plans and design decisions (project-owned)
 templates/           ros_template_cpp | ros_template_py | ros_template_interfaces | devenv/
-tools/               check.sh  new_package.py  lint_rules.py  contracts.py  verify_templates.sh  sync_guidelines.sh
+tools/               bootstrap.sh  check.sh  new_package.py  lint_rules.py  contracts.py  verify_templates.sh  sync_guidelines.sh
 scripts/             env.sh  container.sh  setup_host.sh  setup_external.sh  launch/panes.sh
 external/            pinned non-ROS deps (external.list)
 src/                 your packages, grouped by domain folder
@@ -33,9 +33,25 @@ The workflow agents follow: **plan** (`docs/plans/`, approved by you) → **cont
 
 ## Start a new project
 
+From anywhere, no local checkout needed — this is not `git clone`, the new
+project gets its own fresh git history, not this repo's:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/Mike17K/ros2-agent-guidelines/main/tools/bootstrap.sh \
+  | bash -s -- my_robot_ws
+cd my_robot_ws
+```
+
+Or from a local checkout of this repo:
+
 ```bash
 cp -r guidelines ~/ws/my_robot_ws && cd ~/ws/my_robot_ws
 git init
+```
+
+Then, either way:
+
+```bash
 $EDITOR PROJECT.md project.env           # identity, package map / RMW, domain, DEVENV
 scripts/setup_host.sh                    # what this machine is missing
 scripts/container.sh init isaac_ros      # optional: or docker; then make image && make shell
